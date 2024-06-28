@@ -7,15 +7,12 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 帖子点赞
- *
- * 
- 
+ * 题目
+ * @TableName question
  */
-@TableName(value = "post_thumb")
+@TableName(value ="question")
 @Data
-public class PostThumb implements Serializable {
-
+public class Question implements Serializable {
     /**
      * id
      */
@@ -23,9 +20,14 @@ public class PostThumb implements Serializable {
     private Long id;
 
     /**
-     * 帖子 id
+     * 题目内容（json格式）
      */
-    private Long postId;
+    private String questionContent;
+
+    /**
+     * 应用 id
+     */
+    private Long appId;
 
     /**
      * 创建用户 id
@@ -40,8 +42,13 @@ public class PostThumb implements Serializable {
     /**
      * 更新时间
      */
-    @TableLogic
     private Date updateTime;
+
+    /**
+     * 是否删除
+     */
+    @TableLogic
+    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

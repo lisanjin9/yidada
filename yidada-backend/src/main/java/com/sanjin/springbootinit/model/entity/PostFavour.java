@@ -1,9 +1,7 @@
 package com.sanjin.springbootinit.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
@@ -21,7 +19,7 @@ public class PostFavour implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -42,6 +40,7 @@ public class PostFavour implements Serializable {
     /**
      * 更新时间
      */
+    @TableLogic
     private Date updateTime;
 
     @TableField(exist = false)
