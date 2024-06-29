@@ -10,9 +10,10 @@ import com.sanjin.springbootinit.exception.ThrowUtils;
 import com.sanjin.springbootinit.mapper.AppMapper;
 import com.sanjin.springbootinit.model.dto.app.AppQueryRequest;
 import com.sanjin.springbootinit.model.entity.App;
-import com.sanjin.springbootinit.model.entity.AppFavour;
-import com.sanjin.springbootinit.model.entity.AppThumb;
 import com.sanjin.springbootinit.model.entity.User;
+import com.sanjin.springbootinit.model.enums.AppScoringStrategyEnum;
+import com.sanjin.springbootinit.model.enums.AppTypeEnum;
+import com.sanjin.springbootinit.model.enums.ReviewStatusEnum;
 import com.sanjin.springbootinit.model.vo.AppVO;
 import com.sanjin.springbootinit.model.vo.UserVO;
 import com.sanjin.springbootinit.service.AppService;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
  * 应用服务实现
  *
  *
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * @from San Jin
  */
 @Service
 @Slf4j
@@ -54,16 +55,33 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
     public void validApp(App app, boolean add) {
         ThrowUtils.throwIf(app == null, ErrorCode.PARAMS_ERROR);
         // todo 从对象中取值
-        String title = app.getTitle();
+        Long id = app.getId();
+        String appName = app.getAppName();
+        String appDesc = app.getAppDesc();
+        Integer appType = app.getAppType();
+        Integer scoringStrategy = app.getScoringStrategy();
+        Integer reviewStatus = app.getReviewStatus();
         // 创建数据时，参数不能为空
         if (add) {
-            // todo 补充校验规则
-            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
+            //补充校验规则
+            ThrowUtils.throwIf(StringUtils.isBlank(appName), ErrorCode.PARAMS_ERROR,"标题不能为空");
+            ThrowUtils.throwIf(StringUtils.isBlank(appDesc), ErrorCode.PARAMS_ERROR,"应用描述不能为空");
+
+            AppTypeEnum appTypeEnum = AppTypeEnum.getEnumByValue(appType);
+            ThrowUtils.throwIf(appTypeEnum == null, ErrorCode.PARAMS_ERROR,"应用类型非法");
+
+            AppScoringStrategyEnum appScoringStrategyEnum = AppScoringStrategyEnum.getEnumByValue(scoringStrategy);
+            ThrowUtils.throwIf(appScoringStrategyEnum == null, ErrorCode.PARAMS_ERROR,"评分策略非法");
+
+            ReviewStatusEnum reviewStatusEnum = ReviewStatusEnum.getEnumByValue(reviewStatus);
+            ThrowUtils.throwIf(reviewStatusEnum == null, ErrorCode.PARAMS_ERROR,"审核状态非法");
+
+
         }
         // 修改数据时，有参数则校验
-        // todo 补充校验规则
-        if (StringUtils.isNotBlank(title)) {
-            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
+        //补充校验规则
+        if (StringUtils.isNotBlank(appName)) {
+            ThrowUtils.throwIf(appName.length() <80, ErrorCode.PARAMS_ERROR, "标题过长");
         }
     }
 
@@ -82,12 +100,12 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         // todo 从对象中取值
         Long id = appQueryRequest.getId();
         Long notId = appQueryRequest.getNotId();
-        String title = appQueryRequest.getTitle();
-        String content = appQueryRequest.getContent();
+        String title = appQueryRequest.getAppName();
+//        String content = appQueryRequest.getContent();
         String searchText = appQueryRequest.getSearchText();
         String sortField = appQueryRequest.getSortField();
         String sortOrder = appQueryRequest.getSortOrder();
-        List<String> tagList = appQueryRequest.getTags();
+//        List<String> tagList = appQueryRequest.getTags();
         Long userId = appQueryRequest.getUserId();
         // todo 补充需要的查询条件
         // 从多字段中搜索
@@ -97,13 +115,13 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         }
         // 模糊查询
         queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
-        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
-        // JSON 数组查询
-        if (CollUtil.isNotEmpty(tagList)) {
-            for (String tag : tagList) {
-                queryWrapper.like("tags", "\"" + tag + "\"");
-            }
-        }
+//        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
+//        // JSON 数组查询
+//        if (CollUtil.isNotEmpty(tagList)) {
+//            for (String tag : tagList) {
+//                queryWrapper.like("tags", "\"" + tag + "\"");
+//            }
+//        }
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
@@ -140,20 +158,20 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         // 2. 已登录，获取用户点赞、收藏状态
         long appId = app.getId();
         User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            // 获取点赞
-            QueryWrapper<AppThumb> appThumbQueryWrapper = new QueryWrapper<>();
-            appThumbQueryWrapper.in("appId", appId);
-            appThumbQueryWrapper.eq("userId", loginUser.getId());
-            AppThumb appThumb = appThumbMapper.selectOne(appThumbQueryWrapper);
-            appVO.setHasThumb(appThumb != null);
-            // 获取收藏
-            QueryWrapper<AppFavour> appFavourQueryWrapper = new QueryWrapper<>();
-            appFavourQueryWrapper.in("appId", appId);
-            appFavourQueryWrapper.eq("userId", loginUser.getId());
-            AppFavour appFavour = appFavourMapper.selectOne(appFavourQueryWrapper);
-            appVO.setHasFavour(appFavour != null);
-        }
+//        if (loginUser != null) {
+//            // 获取点赞
+//            QueryWrapper<AppThumb> appThumbQueryWrapper = new QueryWrapper<>();
+//            appThumbQueryWrapper.in("appId", appId);
+//            appThumbQueryWrapper.eq("userId", loginUser.getId());
+//            AppThumb appThumb = appThumbMapper.selectOne(appThumbQueryWrapper);
+//            appVO.setHasThumb(appThumb != null);
+//            // 获取收藏
+//            QueryWrapper<AppFavour> appFavourQueryWrapper = new QueryWrapper<>();
+//            appFavourQueryWrapper.in("appId", appId);
+//            appFavourQueryWrapper.eq("userId", loginUser.getId());
+//            AppFavour appFavour = appFavourMapper.selectOne(appFavourQueryWrapper);
+//            appVO.setHasFavour(appFavour != null);
+//        }
         // endregion
 
         return appVO;
@@ -188,33 +206,33 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         Map<Long, Boolean> appIdHasThumbMap = new HashMap<>();
         Map<Long, Boolean> appIdHasFavourMap = new HashMap<>();
         User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            Set<Long> appIdSet = appList.stream().map(App::getId).collect(Collectors.toSet());
-            loginUser = userService.getLoginUser(request);
-            // 获取点赞
-            QueryWrapper<AppThumb> appThumbQueryWrapper = new QueryWrapper<>();
-            appThumbQueryWrapper.in("appId", appIdSet);
-            appThumbQueryWrapper.eq("userId", loginUser.getId());
-            List<AppThumb> appAppThumbList = appThumbMapper.selectList(appThumbQueryWrapper);
-            appAppThumbList.forEach(appAppThumb -> appIdHasThumbMap.put(appAppThumb.getAppId(), true));
-            // 获取收藏
-            QueryWrapper<AppFavour> appFavourQueryWrapper = new QueryWrapper<>();
-            appFavourQueryWrapper.in("appId", appIdSet);
-            appFavourQueryWrapper.eq("userId", loginUser.getId());
-            List<AppFavour> appFavourList = appFavourMapper.selectList(appFavourQueryWrapper);
-            appFavourList.forEach(appFavour -> appIdHasFavourMap.put(appFavour.getAppId(), true));
-        }
+//        if (loginUser != null) {
+//            Set<Long> appIdSet = appList.stream().map(App::getId).collect(Collectors.toSet());
+//            loginUser = userService.getLoginUser(request);
+//            // 获取点赞
+//            QueryWrapper<AppThumb> appThumbQueryWrapper = new QueryWrapper<>();
+//            appThumbQueryWrapper.in("appId", appIdSet);
+//            appThumbQueryWrapper.eq("userId", loginUser.getId());
+//            List<AppThumb> appAppThumbList = appThumbMapper.selectList(appThumbQueryWrapper);
+//            appAppThumbList.forEach(appAppThumb -> appIdHasThumbMap.put(appAppThumb.getAppId(), true));
+//            // 获取收藏
+//            QueryWrapper<AppFavour> appFavourQueryWrapper = new QueryWrapper<>();
+//            appFavourQueryWrapper.in("appId", appIdSet);
+//            appFavourQueryWrapper.eq("userId", loginUser.getId());
+//            List<AppFavour> appFavourList = appFavourMapper.selectList(appFavourQueryWrapper);
+//            appFavourList.forEach(appFavour -> appIdHasFavourMap.put(appFavour.getAppId(), true));
+//        }
         // 填充信息
-        appVOList.forEach(appVO -> {
-            Long userId = appVO.getUserId();
-            User user = null;
-            if (userIdUserListMap.containsKey(userId)) {
-                user = userIdUserListMap.get(userId).get(0);
-            }
-            appVO.setUser(userService.getUserVO(user));
-            appVO.setHasThumb(appIdHasThumbMap.getOrDefault(appVO.getId(), false));
-            appVO.setHasFavour(appIdHasFavourMap.getOrDefault(appVO.getId(), false));
-        });
+//        appVOList.forEach(appVO -> {
+//            Long userId = appVO.getUserId();
+//            User user = null;
+//            if (userIdUserListMap.containsKey(userId)) {
+//                user = userIdUserListMap.get(userId).get(0);
+//            }
+//            appVO.setUser(userService.getUserVO(user));
+//            appVO.setHasThumb(appIdHasThumbMap.getOrDefault(appVO.getId(), false));
+//            appVO.setHasFavour(appIdHasFavourMap.getOrDefault(appVO.getId(), false));
+//        });
         // endregion
 
         appVOPage.setRecords(appVOList);

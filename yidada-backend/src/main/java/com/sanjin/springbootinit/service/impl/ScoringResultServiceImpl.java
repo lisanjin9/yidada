@@ -10,8 +10,6 @@ import com.sanjin.springbootinit.exception.ThrowUtils;
 import com.sanjin.springbootinit.mapper.ScoringResultMapper;
 import com.sanjin.springbootinit.model.dto.scoringResult.ScoringResultQueryRequest;
 import com.sanjin.springbootinit.model.entity.ScoringResult;
-import com.sanjin.springbootinit.model.entity.ScoringResultFavour;
-import com.sanjin.springbootinit.model.entity.ScoringResultThumb;
 import com.sanjin.springbootinit.model.entity.User;
 import com.sanjin.springbootinit.model.vo.ScoringResultVO;
 import com.sanjin.springbootinit.model.vo.UserVO;
@@ -34,8 +32,6 @@ import java.util.stream.Collectors;
 /**
  * 评分结果服务实现
  *
- *
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
  */
 @Service
 @Slf4j
@@ -54,17 +50,17 @@ public class ScoringResultServiceImpl extends ServiceImpl<ScoringResultMapper, S
     public void validScoringResult(ScoringResult scoringResult, boolean add) {
         ThrowUtils.throwIf(scoringResult == null, ErrorCode.PARAMS_ERROR);
         // todo 从对象中取值
-        String title = scoringResult.getTitle();
+//        String title = scoringResult.getTitle();
         // 创建数据时，参数不能为空
         if (add) {
             // todo 补充校验规则
-            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
+//            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
         }
         // 修改数据时，有参数则校验
         // todo 补充校验规则
-        if (StringUtils.isNotBlank(title)) {
-            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
-        }
+//        if (StringUtils.isNotBlank(title)) {
+//            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
+//        }
     }
 
     /**
@@ -82,12 +78,12 @@ public class ScoringResultServiceImpl extends ServiceImpl<ScoringResultMapper, S
         // todo 从对象中取值
         Long id = scoringResultQueryRequest.getId();
         Long notId = scoringResultQueryRequest.getNotId();
-        String title = scoringResultQueryRequest.getTitle();
-        String content = scoringResultQueryRequest.getContent();
+//        String title = scoringResultQueryRequest.getTitle();
+//        String content = scoringResultQueryRequest.getContent();
         String searchText = scoringResultQueryRequest.getSearchText();
         String sortField = scoringResultQueryRequest.getSortField();
         String sortOrder = scoringResultQueryRequest.getSortOrder();
-        List<String> tagList = scoringResultQueryRequest.getTags();
+//        List<String> tagList = scoringResultQueryRequest.getTags();
         Long userId = scoringResultQueryRequest.getUserId();
         // todo 补充需要的查询条件
         // 从多字段中搜索
@@ -96,14 +92,14 @@ public class ScoringResultServiceImpl extends ServiceImpl<ScoringResultMapper, S
             queryWrapper.and(qw -> qw.like("title", searchText).or().like("content", searchText));
         }
         // 模糊查询
-        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
-        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
+//        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
+//        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
         // JSON 数组查询
-        if (CollUtil.isNotEmpty(tagList)) {
-            for (String tag : tagList) {
-                queryWrapper.like("tags", "\"" + tag + "\"");
-            }
-        }
+//        if (CollUtil.isNotEmpty(tagList)) {
+//            for (String tag : tagList) {
+//                queryWrapper.like("tags", "\"" + tag + "\"");
+//            }
+//        }
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
@@ -140,20 +136,20 @@ public class ScoringResultServiceImpl extends ServiceImpl<ScoringResultMapper, S
         // 2. 已登录，获取用户点赞、收藏状态
         long scoringResultId = scoringResult.getId();
         User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            // 获取点赞
-            QueryWrapper<ScoringResultThumb> scoringResultThumbQueryWrapper = new QueryWrapper<>();
-            scoringResultThumbQueryWrapper.in("scoringResultId", scoringResultId);
-            scoringResultThumbQueryWrapper.eq("userId", loginUser.getId());
-            ScoringResultThumb scoringResultThumb = scoringResultThumbMapper.selectOne(scoringResultThumbQueryWrapper);
-            scoringResultVO.setHasThumb(scoringResultThumb != null);
-            // 获取收藏
-            QueryWrapper<ScoringResultFavour> scoringResultFavourQueryWrapper = new QueryWrapper<>();
-            scoringResultFavourQueryWrapper.in("scoringResultId", scoringResultId);
-            scoringResultFavourQueryWrapper.eq("userId", loginUser.getId());
-            ScoringResultFavour scoringResultFavour = scoringResultFavourMapper.selectOne(scoringResultFavourQueryWrapper);
-            scoringResultVO.setHasFavour(scoringResultFavour != null);
-        }
+//        if (loginUser != null) {
+//            // 获取点赞
+//            QueryWrapper<ScoringResultThumb> scoringResultThumbQueryWrapper = new QueryWrapper<>();
+//            scoringResultThumbQueryWrapper.in("scoringResultId", scoringResultId);
+//            scoringResultThumbQueryWrapper.eq("userId", loginUser.getId());
+//            ScoringResultThumb scoringResultThumb = scoringResultThumbMapper.selectOne(scoringResultThumbQueryWrapper);
+//            scoringResultVO.setHasThumb(scoringResultThumb != null);
+//            // 获取收藏
+//            QueryWrapper<ScoringResultFavour> scoringResultFavourQueryWrapper = new QueryWrapper<>();
+//            scoringResultFavourQueryWrapper.in("scoringResultId", scoringResultId);
+//            scoringResultFavourQueryWrapper.eq("userId", loginUser.getId());
+//            ScoringResultFavour scoringResultFavour = scoringResultFavourMapper.selectOne(scoringResultFavourQueryWrapper);
+//            scoringResultVO.setHasFavour(scoringResultFavour != null);
+//        }
         // endregion
 
         return scoringResultVO;
@@ -188,33 +184,33 @@ public class ScoringResultServiceImpl extends ServiceImpl<ScoringResultMapper, S
         Map<Long, Boolean> scoringResultIdHasThumbMap = new HashMap<>();
         Map<Long, Boolean> scoringResultIdHasFavourMap = new HashMap<>();
         User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            Set<Long> scoringResultIdSet = scoringResultList.stream().map(ScoringResult::getId).collect(Collectors.toSet());
-            loginUser = userService.getLoginUser(request);
-            // 获取点赞
-            QueryWrapper<ScoringResultThumb> scoringResultThumbQueryWrapper = new QueryWrapper<>();
-            scoringResultThumbQueryWrapper.in("scoringResultId", scoringResultIdSet);
-            scoringResultThumbQueryWrapper.eq("userId", loginUser.getId());
-            List<ScoringResultThumb> scoringResultScoringResultThumbList = scoringResultThumbMapper.selectList(scoringResultThumbQueryWrapper);
-            scoringResultScoringResultThumbList.forEach(scoringResultScoringResultThumb -> scoringResultIdHasThumbMap.put(scoringResultScoringResultThumb.getScoringResultId(), true));
-            // 获取收藏
-            QueryWrapper<ScoringResultFavour> scoringResultFavourQueryWrapper = new QueryWrapper<>();
-            scoringResultFavourQueryWrapper.in("scoringResultId", scoringResultIdSet);
-            scoringResultFavourQueryWrapper.eq("userId", loginUser.getId());
-            List<ScoringResultFavour> scoringResultFavourList = scoringResultFavourMapper.selectList(scoringResultFavourQueryWrapper);
-            scoringResultFavourList.forEach(scoringResultFavour -> scoringResultIdHasFavourMap.put(scoringResultFavour.getScoringResultId(), true));
-        }
-        // 填充信息
-        scoringResultVOList.forEach(scoringResultVO -> {
-            Long userId = scoringResultVO.getUserId();
-            User user = null;
-            if (userIdUserListMap.containsKey(userId)) {
-                user = userIdUserListMap.get(userId).get(0);
-            }
-            scoringResultVO.setUser(userService.getUserVO(user));
-            scoringResultVO.setHasThumb(scoringResultIdHasThumbMap.getOrDefault(scoringResultVO.getId(), false));
-            scoringResultVO.setHasFavour(scoringResultIdHasFavourMap.getOrDefault(scoringResultVO.getId(), false));
-        });
+//        if (loginUser != null) {
+//            Set<Long> scoringResultIdSet = scoringResultList.stream().map(ScoringResult::getId).collect(Collectors.toSet());
+//            loginUser = userService.getLoginUser(request);
+//            // 获取点赞
+//            QueryWrapper<ScoringResultThumb> scoringResultThumbQueryWrapper = new QueryWrapper<>();
+//            scoringResultThumbQueryWrapper.in("scoringResultId", scoringResultIdSet);
+//            scoringResultThumbQueryWrapper.eq("userId", loginUser.getId());
+//            List<ScoringResultThumb> scoringResultScoringResultThumbList = scoringResultThumbMapper.selectList(scoringResultThumbQueryWrapper);
+//            scoringResultScoringResultThumbList.forEach(scoringResultScoringResultThumb -> scoringResultIdHasThumbMap.put(scoringResultScoringResultThumb.getScoringResultId(), true));
+//            // 获取收藏
+//            QueryWrapper<ScoringResultFavour> scoringResultFavourQueryWrapper = new QueryWrapper<>();
+//            scoringResultFavourQueryWrapper.in("scoringResultId", scoringResultIdSet);
+//            scoringResultFavourQueryWrapper.eq("userId", loginUser.getId());
+//            List<ScoringResultFavour> scoringResultFavourList = scoringResultFavourMapper.selectList(scoringResultFavourQueryWrapper);
+//            scoringResultFavourList.forEach(scoringResultFavour -> scoringResultIdHasFavourMap.put(scoringResultFavour.getScoringResultId(), true));
+//        }
+//        // 填充信息
+//        scoringResultVOList.forEach(scoringResultVO -> {
+//            Long userId = scoringResultVO.getUserId();
+//            User user = null;
+//            if (userIdUserListMap.containsKey(userId)) {
+//                user = userIdUserListMap.get(userId).get(0);
+//            }
+//            scoringResultVO.setUser(userService.getUserVO(user));
+//            scoringResultVO.setHasThumb(scoringResultIdHasThumbMap.getOrDefault(scoringResultVO.getId(), false));
+//            scoringResultVO.setHasFavour(scoringResultIdHasFavourMap.getOrDefault(scoringResultVO.getId(), false));
+//        });
         // endregion
 
         scoringResultVOPage.setRecords(scoringResultVOList);

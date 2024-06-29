@@ -2,10 +2,7 @@ package com.sanjin.springbootinit.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sanjin.springbootinit.annotation.AuthCheck;
-import com.sanjin.springbootinit.common.BaseResponse;
-import com.sanjin.springbootinit.common.DeleteRequest;
-import com.sanjin.springbootinit.common.ErrorCode;
-import com.sanjin.springbootinit.common.ResultUtils;
+import com.sanjin.springbootinit.common.*;
 import com.sanjin.springbootinit.constant.UserConstant;
 import com.sanjin.springbootinit.exception.BusinessException;
 import com.sanjin.springbootinit.exception.ThrowUtils;
@@ -15,15 +12,18 @@ import com.sanjin.springbootinit.model.dto.app.AppQueryRequest;
 import com.sanjin.springbootinit.model.dto.app.AppUpdateRequest;
 import com.sanjin.springbootinit.model.entity.App;
 import com.sanjin.springbootinit.model.entity.User;
+import com.sanjin.springbootinit.model.enums.ReviewStatusEnum;
 import com.sanjin.springbootinit.model.vo.AppVO;
 import com.sanjin.springbootinit.service.AppService;
 import com.sanjin.springbootinit.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * 应用接口
@@ -52,12 +52,12 @@ public class AppController {
     @PostMapping("/add")
     public BaseResponse<Long> addApp(@RequestBody AppAddRequest appAddRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(appAddRequest == null, ErrorCode.PARAMS_ERROR);
-        // todo 在此处将实体类和 DTO 进行转换
+        //在此处将实体类和 DTO 进行转换
         App app = new App();
         BeanUtils.copyProperties(appAddRequest, app);
         // 数据校验
         appService.validApp(app, true);
-        // todo 填充默认值
+        //填充默认值
         User loginUser = userService.getLoginUser(request);
         app.setUserId(loginUser.getId());
         // 写入数据库
@@ -234,4 +234,47 @@ public class AppController {
     }
 
     // endregion
+
+
+    /**
+     * 应用审核
+     */
+    @PostMapping("/review")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> doAppReview(@RequestBody ReviewRequest reviewRequest , HttpServletRequest request){
+        // 1. 判断参数不能为空
+        ThrowUtils.throwIf(reviewRequest == null , ErrorCode.PARAMS_ERROR,"参数不能为空");
+
+        Long id = reviewRequest.getId();
+        Integer reviewStatus = reviewRequest.getReviewStatus();
+
+        // 2. 校验id 和 status 不能为空
+        ReviewStatusEnum reviewStatusEnum = ReviewStatusEnum.getEnumByValue(reviewStatus);
+        if (id == null || reviewStatusEnum == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请求参数异常");
+        }
+
+        // 3. 查询数据是否存在
+        App oldApp = appService.getById(id);
+        ThrowUtils.throwIf(oldApp == null,ErrorCode.NOT_FOUND_ERROR);
+
+        // 4. 判断该数据的状态是否一致
+        if (oldApp.getReviewStatus().equals(reviewStatus)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"已是该状态");
+        }
+
+        // 5. 全部校验通过，开始操作数据库进行更改数据
+        User loginUser = userService.getLoginUser(request);
+        App app = new App();
+        app.setId(id);
+        app.setReviewStatus(reviewStatus);
+        app.setReviewerId(loginUser.getId());
+        app.setReviewTime(new Date());
+
+        boolean b = appService.updateById(app);
+        ThrowUtils.throwIf(!b,ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+
+
+    }
 }

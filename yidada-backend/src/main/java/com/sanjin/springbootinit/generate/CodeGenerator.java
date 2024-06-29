@@ -16,7 +16,7 @@ import java.io.Writer;
  * 代码生成器
  *
  * 
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * @from San Jin
  */
 public class CodeGenerator {
 

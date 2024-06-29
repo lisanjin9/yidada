@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  * 用户答题记录服务
  *
  *
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * @from San Jin
  */
 public interface UserAnswerService extends IService<UserAnswer> {
 

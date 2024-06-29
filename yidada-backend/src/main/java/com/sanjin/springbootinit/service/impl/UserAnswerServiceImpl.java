@@ -9,10 +9,8 @@ import com.sanjin.springbootinit.constant.CommonConstant;
 import com.sanjin.springbootinit.exception.ThrowUtils;
 import com.sanjin.springbootinit.mapper.UserAnswerMapper;
 import com.sanjin.springbootinit.model.dto.userAnswer.UserAnswerQueryRequest;
-import com.sanjin.springbootinit.model.entity.UserAnswer;
-import com.sanjin.springbootinit.model.entity.UserAnswerFavour;
-import com.sanjin.springbootinit.model.entity.UserAnswerThumb;
 import com.sanjin.springbootinit.model.entity.User;
+import com.sanjin.springbootinit.model.entity.UserAnswer;
 import com.sanjin.springbootinit.model.vo.UserAnswerVO;
 import com.sanjin.springbootinit.model.vo.UserVO;
 import com.sanjin.springbootinit.service.UserAnswerService;
@@ -35,7 +33,7 @@ import java.util.stream.Collectors;
  * 用户答题记录服务实现
  *
  *
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * @from San Jin
  */
 @Service
 @Slf4j
@@ -54,7 +52,7 @@ public class UserAnswerServiceImpl extends ServiceImpl<UserAnswerMapper, UserAns
     public void validUserAnswer(UserAnswer userAnswer, boolean add) {
         ThrowUtils.throwIf(userAnswer == null, ErrorCode.PARAMS_ERROR);
         // todo 从对象中取值
-        String title = userAnswer.getTitle();
+        String title = userAnswer.getResultName();
         // 创建数据时，参数不能为空
         if (add) {
             // todo 补充校验规则
@@ -82,12 +80,12 @@ public class UserAnswerServiceImpl extends ServiceImpl<UserAnswerMapper, UserAns
         // todo 从对象中取值
         Long id = userAnswerQueryRequest.getId();
         Long notId = userAnswerQueryRequest.getNotId();
-        String title = userAnswerQueryRequest.getTitle();
-        String content = userAnswerQueryRequest.getContent();
+//        String title = userAnswerQueryRequest.getTitle();
+//        String content = userAnswerQueryRequest.getContent();
         String searchText = userAnswerQueryRequest.getSearchText();
         String sortField = userAnswerQueryRequest.getSortField();
         String sortOrder = userAnswerQueryRequest.getSortOrder();
-        List<String> tagList = userAnswerQueryRequest.getTags();
+//        List<String> tagList = userAnswerQueryRequest.getTags();
         Long userId = userAnswerQueryRequest.getUserId();
         // todo 补充需要的查询条件
         // 从多字段中搜索
@@ -96,14 +94,14 @@ public class UserAnswerServiceImpl extends ServiceImpl<UserAnswerMapper, UserAns
             queryWrapper.and(qw -> qw.like("title", searchText).or().like("content", searchText));
         }
         // 模糊查询
-        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
-        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
+//        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
+//        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
         // JSON 数组查询
-        if (CollUtil.isNotEmpty(tagList)) {
-            for (String tag : tagList) {
-                queryWrapper.like("tags", "\"" + tag + "\"");
-            }
-        }
+//        if (CollUtil.isNotEmpty(tagList)) {
+//            for (String tag : tagList) {
+//                queryWrapper.like("tags", "\"" + tag + "\"");
+//            }
+//        }
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
@@ -140,20 +138,20 @@ public class UserAnswerServiceImpl extends ServiceImpl<UserAnswerMapper, UserAns
         // 2. 已登录，获取用户点赞、收藏状态
         long userAnswerId = userAnswer.getId();
         User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            // 获取点赞
-            QueryWrapper<UserAnswerThumb> userAnswerThumbQueryWrapper = new QueryWrapper<>();
-            userAnswerThumbQueryWrapper.in("userAnswerId", userAnswerId);
-            userAnswerThumbQueryWrapper.eq("userId", loginUser.getId());
-            UserAnswerThumb userAnswerThumb = userAnswerThumbMapper.selectOne(userAnswerThumbQueryWrapper);
-            userAnswerVO.setHasThumb(userAnswerThumb != null);
-            // 获取收藏
-            QueryWrapper<UserAnswerFavour> userAnswerFavourQueryWrapper = new QueryWrapper<>();
-            userAnswerFavourQueryWrapper.in("userAnswerId", userAnswerId);
-            userAnswerFavourQueryWrapper.eq("userId", loginUser.getId());
-            UserAnswerFavour userAnswerFavour = userAnswerFavourMapper.selectOne(userAnswerFavourQueryWrapper);
-            userAnswerVO.setHasFavour(userAnswerFavour != null);
-        }
+//        if (loginUser != null) {
+//            // 获取点赞
+//            QueryWrapper<UserAnswerThumb> userAnswerThumbQueryWrapper = new QueryWrapper<>();
+//            userAnswerThumbQueryWrapper.in("userAnswerId", userAnswerId);
+//            userAnswerThumbQueryWrapper.eq("userId", loginUser.getId());
+//            UserAnswerThumb userAnswerThumb = userAnswerThumbMapper.selectOne(userAnswerThumbQueryWrapper);
+//            userAnswerVO.setHasThumb(userAnswerThumb != null);
+//            // 获取收藏
+//            QueryWrapper<UserAnswerFavour> userAnswerFavourQueryWrapper = new QueryWrapper<>();
+//            userAnswerFavourQueryWrapper.in("userAnswerId", userAnswerId);
+//            userAnswerFavourQueryWrapper.eq("userId", loginUser.getId());
+//            UserAnswerFavour userAnswerFavour = userAnswerFavourMapper.selectOne(userAnswerFavourQueryWrapper);
+//            userAnswerVO.setHasFavour(userAnswerFavour != null);
+//        }
         // endregion
 
         return userAnswerVO;
@@ -188,33 +186,33 @@ public class UserAnswerServiceImpl extends ServiceImpl<UserAnswerMapper, UserAns
         Map<Long, Boolean> userAnswerIdHasThumbMap = new HashMap<>();
         Map<Long, Boolean> userAnswerIdHasFavourMap = new HashMap<>();
         User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            Set<Long> userAnswerIdSet = userAnswerList.stream().map(UserAnswer::getId).collect(Collectors.toSet());
-            loginUser = userService.getLoginUser(request);
-            // 获取点赞
-            QueryWrapper<UserAnswerThumb> userAnswerThumbQueryWrapper = new QueryWrapper<>();
-            userAnswerThumbQueryWrapper.in("userAnswerId", userAnswerIdSet);
-            userAnswerThumbQueryWrapper.eq("userId", loginUser.getId());
-            List<UserAnswerThumb> userAnswerUserAnswerThumbList = userAnswerThumbMapper.selectList(userAnswerThumbQueryWrapper);
-            userAnswerUserAnswerThumbList.forEach(userAnswerUserAnswerThumb -> userAnswerIdHasThumbMap.put(userAnswerUserAnswerThumb.getUserAnswerId(), true));
-            // 获取收藏
-            QueryWrapper<UserAnswerFavour> userAnswerFavourQueryWrapper = new QueryWrapper<>();
-            userAnswerFavourQueryWrapper.in("userAnswerId", userAnswerIdSet);
-            userAnswerFavourQueryWrapper.eq("userId", loginUser.getId());
-            List<UserAnswerFavour> userAnswerFavourList = userAnswerFavourMapper.selectList(userAnswerFavourQueryWrapper);
-            userAnswerFavourList.forEach(userAnswerFavour -> userAnswerIdHasFavourMap.put(userAnswerFavour.getUserAnswerId(), true));
-        }
-        // 填充信息
-        userAnswerVOList.forEach(userAnswerVO -> {
-            Long userId = userAnswerVO.getUserId();
-            User user = null;
-            if (userIdUserListMap.containsKey(userId)) {
-                user = userIdUserListMap.get(userId).get(0);
-            }
-            userAnswerVO.setUser(userService.getUserVO(user));
-            userAnswerVO.setHasThumb(userAnswerIdHasThumbMap.getOrDefault(userAnswerVO.getId(), false));
-            userAnswerVO.setHasFavour(userAnswerIdHasFavourMap.getOrDefault(userAnswerVO.getId(), false));
-        });
+//        if (loginUser != null) {
+//            Set<Long> userAnswerIdSet = userAnswerList.stream().map(UserAnswer::getId).collect(Collectors.toSet());
+//            loginUser = userService.getLoginUser(request);
+//            // 获取点赞
+//            QueryWrapper<UserAnswerThumb> userAnswerThumbQueryWrapper = new QueryWrapper<>();
+//            userAnswerThumbQueryWrapper.in("userAnswerId", userAnswerIdSet);
+//            userAnswerThumbQueryWrapper.eq("userId", loginUser.getId());
+//            List<UserAnswerThumb> userAnswerUserAnswerThumbList = userAnswerThumbMapper.selectList(userAnswerThumbQueryWrapper);
+//            userAnswerUserAnswerThumbList.forEach(userAnswerUserAnswerThumb -> userAnswerIdHasThumbMap.put(userAnswerUserAnswerThumb.getUserAnswerId(), true));
+//            // 获取收藏
+//            QueryWrapper<UserAnswerFavour> userAnswerFavourQueryWrapper = new QueryWrapper<>();
+//            userAnswerFavourQueryWrapper.in("userAnswerId", userAnswerIdSet);
+//            userAnswerFavourQueryWrapper.eq("userId", loginUser.getId());
+//            List<UserAnswerFavour> userAnswerFavourList = userAnswerFavourMapper.selectList(userAnswerFavourQueryWrapper);
+//            userAnswerFavourList.forEach(userAnswerFavour -> userAnswerIdHasFavourMap.put(userAnswerFavour.getUserAnswerId(), true));
+//        }
+//        // 填充信息
+//        userAnswerVOList.forEach(userAnswerVO -> {
+//            Long userId = userAnswerVO.getUserId();
+//            User user = null;
+//            if (userIdUserListMap.containsKey(userId)) {
+//                user = userIdUserListMap.get(userId).get(0);
+//            }
+//            userAnswerVO.setUser(userService.getUserVO(user));
+//            userAnswerVO.setHasThumb(userAnswerIdHasThumbMap.getOrDefault(userAnswerVO.getId(), false));
+//            userAnswerVO.setHasFavour(userAnswerIdHasFavourMap.getOrDefault(userAnswerVO.getId(), false));
+//        });
         // endregion
 
         userAnswerVOPage.setRecords(userAnswerVOList);

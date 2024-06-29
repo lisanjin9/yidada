@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  * 应用服务
  *
  *
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * @from San Jin
  */
 public interface AppService extends IService<App> {
 
