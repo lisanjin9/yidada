@@ -8,10 +8,8 @@ import com.sanjin.springbootinit.model.entity.Question;
 import com.sanjin.springbootinit.model.entity.ScoringResult;
 import com.sanjin.springbootinit.model.entity.UserAnswer;
 import com.sanjin.springbootinit.model.vo.QuestionVO;
-import com.sanjin.springbootinit.service.AppService;
 import com.sanjin.springbootinit.service.QuestionService;
 import com.sanjin.springbootinit.service.ScoringResultService;
-import org.aspectj.weaver.ast.Var;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
