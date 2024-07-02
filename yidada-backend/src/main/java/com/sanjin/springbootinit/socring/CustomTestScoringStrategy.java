@@ -23,6 +23,7 @@ import java.util.Map;
  * @CreateTime: 2024-06-29 22:02
  * @Version: 1.0
  */
+@ScoringStrategyConfig(appType = 1, scoringStrategy = 0)
 public class CustomTestScoringStrategy implements ScoringStrategy {
 
     @Resource
