@@ -3,7 +3,7 @@
     <a-col flex="auto">
       <a-menu
         mode="horizontal"
-        :default-selected-keys="['1']"
+        :selected-keys="selectKeys"
         @menu-item-click="doMenuClick"
       >
         <a-menu-item
@@ -30,9 +30,19 @@
 <script setup lang="ts">
 import { routes } from "@/router/routers";
 import { useRouter } from "vue-router";
+import { ref } from "vue";
 
 const router = useRouter();
 
+// 设置默认的tab栏
+const selectKeys = ref(["/"]);
+
+// 点击页面tab栏后 ， 将对应的tab栏设置在more恩的tab栏上，刷新过后还会跳转到该tab栏
+router.afterEach((to) => {
+  selectKeys.value = [to.path];
+});
+
+// 点击对应的Tab栏跳转到对应的路径上
 const doMenuClick = (key: string) => {
   router.push({ path: key });
 };
