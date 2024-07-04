@@ -1,7 +1,11 @@
 <template>
   <a-row id="globHeader" align="center" :wrap="false">
     <a-col flex="auto">
-      <a-menu mode="horizontal" :default-selected-keys="['1']">
+      <a-menu
+        mode="horizontal"
+        :default-selected-keys="['1']"
+        @menu-item-click="doMenuClick"
+      >
         <a-menu-item
           key="0"
           :style="{ padding: 0, marginRight: '38px' }"
@@ -12,10 +16,9 @@
             <div class="title">易答测试系统</div>
           </div>
         </a-menu-item>
-        <a-menu-item key="1">Home</a-menu-item>
-        <a-menu-item key="2">Solution</a-menu-item>
-        <a-menu-item key="3">Cloud Service</a-menu-item>
-        <a-menu-item key="4">Cooperation</a-menu-item>
+        <a-menu-item v-for="item in routes" :key="item.path">
+          {{ item.name }}
+        </a-menu-item>
       </a-menu>
     </a-col>
     <a-col flex="100px">
@@ -24,7 +27,16 @@
   </a-row>
 </template>
 
-<script></script>
+<script setup lang="ts">
+import { routes } from "@/router/routers";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const doMenuClick = (key: string) => {
+  router.push({ path: key });
+};
+</script>
 
 <style scoped>
 #globHeader {
