@@ -1,4 +1,4 @@
-# 采用 程序员鱼皮的万用模板(https://www.code-nav.cn/) 9 - 54：30
+# 采用 程序员鱼皮的万用模板(https://www.code-nav.cn/) 
 # SpringBoot 项目初始模板
 基于 Java SpringBoot 的项目初始模板，整合了常用框架和主流业务的示例代码。
 
