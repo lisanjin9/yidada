@@ -43,7 +43,7 @@ const router = useRouter();
 // 设置默认的tab栏
 const selectKeys = ref(["/"]);
 
-// 点击页面tab栏后 ， 将对应的tab栏设置在more恩的tab栏上，刷新过后还会跳转到该tab栏
+// 点击页面tab栏后 ， 将对应的tab栏设置在more恩的tab栏上，刷新过后还会跳转到该tab栏123
 router.afterEach((to) => {
   selectKeys.value = [to.path];
 });
