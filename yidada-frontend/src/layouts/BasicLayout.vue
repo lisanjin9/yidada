@@ -14,14 +14,9 @@
   </div>
 </template>
 
-<script>
-import GlobHeader from "@/layouts/GlobHeader";
-
-export default {
-  components: { GlobHeader },
-};
+<script lang="ts" setup>
+import GlobHeader from "@/components/GlobHeader.vue";
 </script>
-
 <style scoped>
 #basicLayout {
 }
@@ -32,15 +27,15 @@ export default {
 }
 
 #basicLayout .content {
-  background: linear-gradient(to right, #fefefe, blueviolet);
   margin-bottom: 28px;
   padding: 20px;
+  background: linear-gradient(to right, #fefefe, blueviolet);
 }
 
 .footer {
-  text-align: center;
-  background-color: #efefef;
   padding: 16px;
+  text-align: center;
   text-decoration: none;
+  background-color: #efefef;
 }
 </style>
