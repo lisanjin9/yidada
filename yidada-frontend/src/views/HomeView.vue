@@ -1,5 +1,9 @@
 <template>
-  <div class="home">111</div>
+  <div class="home">{{ JSON.stringify(useloginUser.loginUser) }}</div>
 </template>
 
-<script lang="ts"></script>
+<script setup lang="ts">
+import { useLoginUserStore } from "@/store/UserStore";
+
+const useloginUser = useLoginUserStore();
+</script>

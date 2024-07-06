@@ -22,7 +22,12 @@
       </a-menu>
     </a-col>
     <a-col flex="100px">
-      <a-button type="primary" href="/user/login">登录</a-button>
+      <div v-if="useLoginUser.loginUser.id">
+        {{ useLoginUser.loginUser.username }}
+      </div>
+      <div v-else>
+        <a-button type="primary" href="/user/login">登录</a-button>
+      </div>
     </a-col>
   </a-row>
 </template>
@@ -31,6 +36,7 @@
 import { routes } from "@/router/routers";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import { useLoginUserStore } from "@/store/UserStore";
 
 const router = useRouter();
 
@@ -46,6 +52,8 @@ router.afterEach((to) => {
 const doMenuClick = (key: string) => {
   router.push({ path: key });
 };
+
+const useLoginUser = useLoginUserStore();
 </script>
 
 <style scoped>
