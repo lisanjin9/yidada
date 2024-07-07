@@ -1,8 +1,11 @@
 import { RouteRecordRaw } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
-import AboutView from "@/views/AboutView.vue";
 import ACCESS_ENUM from "@/access/accessEnmu";
 import NoAuthPage from "@/views/NoAuthPage.vue";
+import UserLoginPage from "@/views/user/UserLoginPage.vue";
+import UserRegisterPage from "@/views/user/UserRegisterPage.vue";
+import AdminUserPage from "@/views/admin/AdminUserPage.vue";
+import UserLayout from "@/layouts/UserLayout.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -10,10 +13,11 @@ export const routes: Array<RouteRecordRaw> = [
     name: "主页",
     component: HomeView,
   },
+
   {
-    path: "/about",
-    name: "管理员页面",
-    component: AboutView,
+    path: "/admin/user",
+    name: "用户管理",
+    component: AdminUserPage,
     meta: {
       access: ACCESS_ENUM.ADMIN,
     },
@@ -26,13 +30,24 @@ export const routes: Array<RouteRecordRaw> = [
       hideInMenu: true,
     },
   },
-  // {
-  //   path: "/about",
-  //   name: "关于",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  // },
+  {
+    path: "/user",
+    name: "用户",
+    component: UserLayout,
+    children: [
+      {
+        path: "/user/login",
+        name: "用户登录",
+        component: UserLoginPage,
+      },
+      {
+        path: "/user/register",
+        name: "用户注册",
+        component: UserRegisterPage,
+      },
+    ],
+    meta: {
+      hideInMenu: true,
+    },
+  },
 ];
