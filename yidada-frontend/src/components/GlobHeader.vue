@@ -16,14 +16,14 @@
             <div class="title">易答测试系统</div>
           </div>
         </a-menu-item>
-        <a-menu-item v-for="item in routes" :key="item.path">
+        <a-menu-item v-for="item in visibleRoutes" :key="item.path">
           {{ item.name }}
         </a-menu-item>
       </a-menu>
     </a-col>
     <a-col flex="100px">
-      <div v-if="useLoginUser.loginUser.id">
-        {{ useLoginUser.loginUser.username }}
+      <div v-if="loginUserStore.loginUser.id">
+        {{ loginUserStore.loginUser.userName ?? "无名" }}
       </div>
       <div v-else>
         <a-button type="primary" href="/user/login">登录</a-button>
@@ -35,8 +35,11 @@
 <script setup lang="ts">
 import { routes } from "@/router/routers";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useLoginUserStore } from "@/store/UserStore";
+import checkAccess from "@/access/checkAccess";
+
+const loginUserStore = useLoginUserStore();
 
 const router = useRouter();
 
@@ -48,12 +51,24 @@ router.afterEach((to) => {
   selectKeys.value = [to.path];
 });
 
+// 展示在菜单栏的路由数组
+const visibleRoutes = computed(() => {
+  return routes.filter((item) => {
+    if (item.meta?.hideInMenu) {
+      return false;
+    }
+    // 根据权限过滤菜单
+    if (!checkAccess(loginUserStore.loginUser, item.meta?.access as string)) {
+      return false;
+    }
+    return true;
+  });
+});
+
 // 点击对应的Tab栏跳转到对应的路径上
 const doMenuClick = (key: string) => {
   router.push({ path: key });
 };
-
-const useLoginUser = useLoginUserStore();
 </script>
 
 <style scoped>
