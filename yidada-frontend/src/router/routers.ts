@@ -1,5 +1,5 @@
 import { RouteRecordRaw } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
+import HomePage from "@/views/HomePage.vue";
 import ACCESS_ENUM from "@/access/accessEnmu";
 import NoAuthPage from "@/views/NoAuthPage.vue";
 import UserLoginPage from "@/views/user/UserLoginPage.vue";
@@ -15,7 +15,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "主页",
-    component: HomeView,
+    component: HomePage,
   },
   {
     path: "/admin/user",
