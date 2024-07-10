@@ -19,11 +19,11 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class AiConfig {
 
-    private String apiKey;
+    private String appKey;
 
     @Bean
     public ClientV4 getClientV4(){
-       return new ClientV4.Builder(apiKey).build();
+       return new ClientV4.Builder(appKey).build();
     }
 
 }

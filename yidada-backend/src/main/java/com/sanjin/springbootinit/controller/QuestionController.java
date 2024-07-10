@@ -10,6 +10,7 @@ import com.sanjin.springbootinit.common.ResultUtils;
 import com.sanjin.springbootinit.constant.UserConstant;
 import com.sanjin.springbootinit.exception.BusinessException;
 import com.sanjin.springbootinit.exception.ThrowUtils;
+import com.sanjin.springbootinit.manager.AiManager;
 import com.sanjin.springbootinit.model.dto.question.*;
 import com.sanjin.springbootinit.model.entity.App;
 import com.sanjin.springbootinit.model.entity.Question;
@@ -46,8 +47,8 @@ public class QuestionController {
     @Resource
     private AppService appService;
 
-//    @Resource
-//    private AiManager aiManager;
+    @Resource
+    private AiManager aiManager;
 
     // region 增删改查
 
@@ -288,28 +289,28 @@ public class QuestionController {
         return userMessage.toString();
     }
 
-//    @PostMapping("/ai_generate")
-//    public BaseResponse<List<QuestionContentDTO>> aiGenerateQuestion(
-//            @RequestBody AiGenerateQuestionRequest aiGenerateQuestionRequest) {
-//        ThrowUtils.throwIf(aiGenerateQuestionRequest == null, ErrorCode.PARAMS_ERROR);
-//        // 获取参数
-//        Long appId = aiGenerateQuestionRequest.getAppId();
-//        int questionNumber = aiGenerateQuestionRequest.getQuestionNumber();
-//        int optionNumber = aiGenerateQuestionRequest.getOptionNumber();
-//        // 获取应用信息
-//        App app = appService.getById(appId);
-//        ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR);
-//        // 封装 Prompt
-//        String userMessage = getGenerateQuestionUserMessage(app, questionNumber, optionNumber);
-//        // AI 生成
-//        String result = aiManager.doSyncRequest(GENERATE_QUESTION_SYSTEM_MESSAGE, userMessage, null);
-//        // 截取需要的 JSON 信息
-//        int start = result.indexOf("[");
-//        int end = result.lastIndexOf("]");
-//        String json = result.substring(start, end + 1);
-//        List<QuestionContentDTO> questionContentDTOList = JSONUtil.toList(json, QuestionContentDTO.class);
-//        return ResultUtils.success(questionContentDTOList);
-//    }
+    @PostMapping("/ai_generate")
+    public BaseResponse<List<QuestionContentDTO>> aiGenerateQuestion(
+            @RequestBody AiGenerateQuestionRequest aiGenerateQuestionRequest) {
+        ThrowUtils.throwIf(aiGenerateQuestionRequest == null, ErrorCode.PARAMS_ERROR);
+        // 获取参数
+        Long appId = aiGenerateQuestionRequest.getAppId();
+        int questionNumber = aiGenerateQuestionRequest.getQuestionNumber();
+        int optionNumber = aiGenerateQuestionRequest.getOptionNumber();
+        // 获取应用信息
+        App app = appService.getById(appId);
+        ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR);
+        // 封装 Prompt
+        String userMessage = getGenerateQuestionUserMessage(app, questionNumber, optionNumber);
+        // AI 生成
+        String result = aiManager.doSyncRequest(GENERATE_QUESTION_SYSTEM_MESSAGE, userMessage, null);
+        // 截取需要的 JSON 信息
+        int start = result.indexOf("[");
+        int end = result.lastIndexOf("]");
+        String json = result.substring(start, end + 1);
+        List<QuestionContentDTO> questionContentDTOList = JSONUtil.toList(json, QuestionContentDTO.class);
+        return ResultUtils.success(questionContentDTOList);
+    }
 
     // endregion
 }
