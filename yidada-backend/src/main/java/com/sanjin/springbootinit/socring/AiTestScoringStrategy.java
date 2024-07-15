@@ -101,5 +101,5 @@ public class AiTestScoringStrategy implements ScoringStrategy {
         userMessage.append(JSONUtil.toJsonStr(questionAnswerDTOList));
         return userMessage.toString();
     }
-    
+
 }
