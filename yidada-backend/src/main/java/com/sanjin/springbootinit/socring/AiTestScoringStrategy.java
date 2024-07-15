@@ -2,6 +2,8 @@ package com.sanjin.springbootinit.scoring;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.sanjin.springbootinit.manager.AiManager;
 import com.sanjin.springbootinit.model.dto.question.QuestionAnswerDTO;
 import com.sanjin.springbootinit.model.dto.question.QuestionContentDTO;
@@ -16,10 +18,10 @@ import com.sanjin.springbootinit.socring.ScoringStrategyConfig;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * AI 测评类应用评分策略
- *
  */
 @ScoringStrategyConfig(appType = 1, scoringStrategy = 1)
 public class AiTestScoringStrategy implements ScoringStrategy {
@@ -99,5 +101,5 @@ public class AiTestScoringStrategy implements ScoringStrategy {
         userMessage.append(JSONUtil.toJsonStr(questionAnswerDTOList));
         return userMessage.toString();
     }
-
+    
 }
