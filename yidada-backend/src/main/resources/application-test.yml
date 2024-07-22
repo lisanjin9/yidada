@@ -8,8 +8,8 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/jindada
-    username: root
+    url: jdbc:mysql://154.8.199.160:3306/jindada
+    username: jindada
     password: root
   # Redis 配置
   # todo 需替换配置

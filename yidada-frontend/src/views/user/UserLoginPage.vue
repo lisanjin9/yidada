@@ -29,7 +29,7 @@
           <a-button type="primary" html-type="submit" style="width: 120px">
             登录
           </a-button>
-          <a-link href="/user/register">新用户注册</a-link>
+          <router-link to="/user/register">新用户注册 </router-link>
         </div>
       </a-form-item>
     </a-form>
