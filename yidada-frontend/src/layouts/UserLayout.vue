@@ -12,7 +12,7 @@
       </a-layout-content>
       <a-layout-footer class="footer">
         <a href="https://www.lisanjin9.top" target="_blank">
-          个人博客 ♥ 点歌关注吧
+          个人博客 ♥ 点个关注吧
         </a>
       </a-layout-footer>
     </a-layout>
