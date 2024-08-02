@@ -6,7 +6,7 @@ export const isDev = process.env.NODE_ENV === "development";
 
 // 创建 Axios 实例
 const myAxios = axios.create({
-  baseURL: isDev ? "http://localhost:8101" : "http://154.8.199.160:8101",
+  baseURL: "http://154.8.199.160:8101",
   timeout: 60000,
   withCredentials: true,
 });
