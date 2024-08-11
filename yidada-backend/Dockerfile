@@ -5,7 +5,7 @@ FROM java:8
 MAINTAINER muye
 
 #工作目录
-WORKDIR /usr/local/yidada
+WORKDIR /usr/local/java
 
 # 开放端口
 EXPOSE 8101
